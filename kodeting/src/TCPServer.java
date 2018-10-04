@@ -51,10 +51,11 @@ public class TCPServer {
                     continue;
                 }
                 serverMSG(sock, "J_OK");
+                final String username = user_temp;
                 System.out.println("USER->" + user_temp + "<-USER");
                 Thread recieveThread = new Thread(() -> {
                     try {
-                        serverRCVMSG(sock, userIP);
+                        serverRCVMSG(sock, username);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -78,16 +79,15 @@ public class TCPServer {
             out.write(sendData);
     }
 
-    public static void serverRCVMSG (Socket sock, String userIP) throws IOException {
+    public static void serverRCVMSG (Socket sock, String username) throws IOException {
         InputStream inp = sock.getInputStream();
         while(true){
             byte[] dataRecieve = new byte[1024];
             inp.read(dataRecieve);
             String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
-            System.out.println("Server -->" + msgRecieve + "<--");
-            /*
-            String sendMessage = "SERVER: [sender:" + userIP + " ]: " + msgRecieve;
+            System.out.println("data <<"+username +">>: <<" + msgRecieve + ">>");
+            /* String sendMessage = "SERVER: [sender:" + userIP + " ]: " + msgRecieve;
             serverMSG(sock, sendMessage);*/
         }
 
