@@ -3,15 +3,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class TCPServer {
+    static ArrayList<HashMap<String, Object>> chatusers = new ArrayList<>();
     public static void main(String[] args) {
         final int servport =5656;
 
         try{
             ServerSocket serv = new ServerSocket(servport);
-
             System.out.println("Starting the server!\n");
 
             while (true) {
@@ -50,7 +52,12 @@ public class TCPServer {
                 }
                 serverMSG(sock, "J_OK");
                 final String username = user_temp;
+                HashMap<String, Object> mitHash = new HashMap<>();
+                mitHash.put("username", username);
+                mitHash.put("Socket", sock);
+                chatusers.add(mitHash);
                 System.out.println("USER->" + user_temp + "<-USER");
+
                 Thread recieveThread = new Thread(() -> {
                     try {
                         serverRCVMSG(sock, username);
@@ -85,11 +92,25 @@ public class TCPServer {
             inp.read(dataRecieve);
             String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
-            System.out.println("data <<"+username +">>: <<" + msgRecieve + ">>");
-            String sendMessage = "SERVER: [sender:" + username + " ]: " + msgRecieve;
-            serverMSG(sock, sendMessage);
+            System.out.println("data <<"+username +">>: <<" + msgRecieve.trim() + ">>");
+            serverSendAll("data <<"+username +">>: <<" + msgRecieve.trim() + ">>");
         }
     }
+
+    public static void serverSendAll(String msg) throws IOException {
+        for (HashMap chatuser : chatusers) {
+            Socket sock_temp = (Socket) chatuser.get("Socket");
+            serverMSG(sock_temp, msg);
+        }
+    }
+
+    /*public static void serverSendUsers() throws IOException{
+        for (HashMap chatuser: chatusers)  {
+            String user_temp = (String) chatuser.get("username");
+            Socket sock_temp = (Socket) chatuser.get("Socket");
+            serverMSG(sock_temp, "User: " +user_temp+" Has Connected");
+        }
+    }*/
 
 
 }

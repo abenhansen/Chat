@@ -74,7 +74,7 @@ public class TCPClient {
             inp.read(dataRecieve);
            String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
-                System.out.println("IN -->" + msgRecieve.trim() + "<--");
+                System.out.println("IN -->" + msgRecieve.trim() + "<--" );
                 return  msgRecieve.trim();
         }
     }
@@ -94,7 +94,7 @@ public class TCPClient {
         while(true){
            Scanner in = new Scanner(System.in);
             System.out.println("Message to server?");
-           String sendMessage = in.nextLine();
+           String sendMessage = in.nextLine() + "\r\n";
             byte[] sendData = sendMessage.getBytes();
             out.write(sendData);
         }
