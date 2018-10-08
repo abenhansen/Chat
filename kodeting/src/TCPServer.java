@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class TCPServer {
     public static void main(String[] args) {
-        final int servport =5659;
+        final int servport =5656;
 
         try{
             ServerSocket serv = new ServerSocket(servport);
@@ -19,16 +19,14 @@ public class TCPServer {
                 System.out.println("User has connected!");
                 String userIP = sock.getInetAddress().getHostAddress();
 
-                String serverMSG = "";
 
-                /*read sendThread = new Thread(() -> {
+               /* Thread sendThread = new Thread(() -> {
                     try {
                         serverMSG(sock, serverMSG);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                });
-                sendThread.start();*/
+                });*/
 
 
                 System.out.println("IP: " + userIP);
@@ -61,6 +59,7 @@ public class TCPServer {
                     }
                 });
                 recieveThread.start();
+                //sendThread.start();
                  }
 
 
@@ -87,10 +86,9 @@ public class TCPServer {
             String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
             System.out.println("data <<"+username +">>: <<" + msgRecieve + ">>");
-            /* String sendMessage = "SERVER: [sender:" + userIP + " ]: " + msgRecieve;
-            serverMSG(sock, sendMessage);*/
+            String sendMessage = "SERVER: [sender:" + username + " ]: " + msgRecieve;
+            serverMSG(sock, sendMessage);
         }
-
     }
 
 

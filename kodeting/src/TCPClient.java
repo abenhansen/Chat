@@ -25,7 +25,7 @@ public class TCPClient {
             final String ipConnect2 = "127.0.0.1";
             System.out.println("Enter port port to connect to");
             //  final int portConnect = in.nextInt();
-            final int portConnect2 = 5659;
+            final int portConnect2 = 5656;
 
                 try {
                     InetAddress ip = InetAddress.getByName(ipConnect2);
@@ -42,7 +42,7 @@ public class TCPClient {
 
                     Thread recieveThread = new Thread(() -> {
                         try {
-                            clientMSG(clientSocket);
+                            clientMSG2(clientSocket);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -55,15 +55,10 @@ public class TCPClient {
                         }
                     });
 
-                    while (clientMSG(clientSocket).equals("J_OK")) {
-                        recieveThread.start();
-                        sendThread.start();
-                    }
-
-
-
-
-
+                    if  (clientMSG(clientSocket).equals("J_OK")) {
+                            recieveThread.start();
+                            sendThread.start();
+                   }
 
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
@@ -79,8 +74,18 @@ public class TCPClient {
             inp.read(dataRecieve);
            String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
-                System.out.println("IN -->" + msgRecieve + "<--");
+                System.out.println("IN -->" + msgRecieve.trim() + "<--");
                 return  msgRecieve.trim();
+        }
+    }
+    public static void clientMSG2 (Socket clientSocket) throws IOException {
+        InputStream inp = clientSocket.getInputStream();
+        while (true) {
+            byte[] dataRecieve = new byte[1024];
+            inp.read(dataRecieve);
+            String msgRecieve = new String(dataRecieve);
+            msgRecieve.trim();
+            System.out.println("IN -->" + msgRecieve.trim() + "<--");
         }
     }
 
@@ -90,8 +95,6 @@ public class TCPClient {
            Scanner in = new Scanner(System.in);
             System.out.println("Message to server?");
            String sendMessage = in.nextLine();
-           if (sendMessage.equals("QUIT"))
-               break;
             byte[] sendData = sendMessage.getBytes();
             out.write(sendData);
         }
