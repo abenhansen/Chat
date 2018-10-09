@@ -58,6 +58,7 @@ public class TCPClient {
                     if  (clientMSG(clientSocket).equals("J_OK")) {
                             recieveThread.start();
                             sendThread.start();
+                        sendAlive(clientSocket);
                    }
 
                 } catch (UnknownHostException e) {
@@ -109,14 +110,23 @@ public class TCPClient {
 
         }
     }
-   /* public static boolean userAccept(Socket clientSocket) throws IOException {
-        InputStream inp = clientSocket.getInputStream();
-            byte[] dataRecieve = new byte[1024];
-            inp.read(dataRecieve);
-            String msgRecieve = new String(dataRecieve);
-            msgRecieve.trim();
-            System.out.println(msgRecieve);
-            return msgRecieve.trim().equals("J_OK");
-        }*/
+
+    public static void sendAlive(Socket sock) {
+        Thread alive = new Thread(() -> {
+            while(true){
+            try {
+                OutputStream out = sock.getOutputStream();
+                String sendMessage = "IMAV";
+                byte[] sendData = sendMessage.getBytes();
+                Thread.sleep(60000);
+                out.write(sendData);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }}
+        });
+        alive.start();
+    }
 
 }
