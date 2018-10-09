@@ -9,17 +9,6 @@ import java.util.Scanner;
 public class TCPClient {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-
-            // Skal rykkes  til server
-        /*while (!in.hasNext("[A-Za-z0-9\\-\\_]+")) {
-            System.out.println("username needs to be lower than 12 characters and have no symbols, please try again");
-            Username = in.nextLine();
-        }*/
-            //String Username = in.nextLine();
-        /*while (Username.length() > 12) {
-            System.out.println("username needs to be lower than 12 characters");
-            Username = in.nextLine();
-        }*/
             System.out.println("Enter server IP to connect to");
             //  final String ipConnect = in.nextLine();
             final String ipConnect2 = "127.0.0.1";
@@ -68,6 +57,7 @@ public class TCPClient {
                 }
             }
 
+            //Method used along with thread to check if server responds with J_OK
     public static String clientMSG (Socket clientSocket) throws IOException {
         InputStream inp = clientSocket.getInputStream();
         while (true) {
@@ -90,6 +80,7 @@ public class TCPClient {
         }
     }
 
+    // Method to send messages from client
     public static void clientSendMSG (Socket sock) throws IOException{
         while(true){
         OutputStream out = sock.getOutputStream();
@@ -102,15 +93,11 @@ public class TCPClient {
                 System.exit(0);
                 break;
             }
-            if(sendMessage.length()<=255) {
                 out.write(sendData);
-            }
-                else
-                    System.out.println("Max 250 characters allowed");
-
         }
     }
 
+    //Method to send alive message
     public static void sendAlive(Socket sock) {
         Thread alive = new Thread(() -> {
             while(true){

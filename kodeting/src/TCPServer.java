@@ -20,17 +20,6 @@ public class TCPServer {
                 Socket sock = serv.accept();
                 System.out.println("User has connected!");
                 String userIP = sock.getInetAddress().getHostAddress();
-
-
-               /* Thread sendThread = new Thread(() -> {
-                    try {
-                        serverMSG(sock, serverMSG);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });*/
-
-
                 System.out.println("IP: " + userIP);
                 System.out.println("PORT: " + sock.getPort());
                 InputStream inp = sock.getInputStream();
@@ -42,17 +31,14 @@ public class TCPServer {
                 user_temp = user_temp.substring(0, user_temp.indexOf(","));
                 if (user_temp.length() > 12) {
                     serverMSG(sock, "J_ER: Username is too long must be under 12 chars");
-                    System.out.println("test");
                     continue;
                 }
                 if (checkChar(user_temp)) {
                     serverMSG(sock, " J_ER: Username must not contain any symbols");
-                    System.out.println("test2");
                     continue;
                 }
                 if (user_temp.equals(duppUsers())) {
                     serverMSG(sock, " J_ER: User already exists");
-                    System.out.println("test2");
                     continue;
                 }
                 serverMSG(sock, "J_OK");
@@ -74,7 +60,6 @@ public class TCPServer {
                 });
 
                     recieveThread.start();
-                    //sendThread.start();
                 }
 
 
@@ -100,13 +85,20 @@ public class TCPServer {
             inp.read(dataRecieve);
             String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
+
             if (msgRecieve.trim().equals("QUIT")) {
                 removeUser(username);
                 allUsers();
                 break;
             }
+            if(msgRecieve.trim().length()<=250) {
                 System.out.println("DATA [" + username + "]: " + msgRecieve.trim());
                 serverSendAll("DATA [" + username + "]: " + msgRecieve.trim());
+                continue;
+            }
+            if (msgRecieve.trim().length()>250) {
+                serverMSG(sock, "J_ER Max 250 characters allowed");
+            }
 
         }
     }
