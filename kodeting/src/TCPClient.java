@@ -79,8 +79,8 @@ public class TCPClient {
         }
     }
     public static void clientMSG2 (Socket clientSocket) throws IOException {
-        InputStream inp = clientSocket.getInputStream();
         while (true) {
+        InputStream inp = clientSocket.getInputStream();
             byte[] dataRecieve = new byte[1024];
             inp.read(dataRecieve);
             String msgRecieve = new String(dataRecieve);
@@ -90,13 +90,23 @@ public class TCPClient {
     }
 
     public static void clientSendMSG (Socket sock) throws IOException{
-        OutputStream out = sock.getOutputStream();
         while(true){
+        OutputStream out = sock.getOutputStream();
            Scanner in = new Scanner(System.in);
             System.out.println("Message to server?");
            String sendMessage = in.nextLine() + "\r\n";
             byte[] sendData = sendMessage.getBytes();
-            out.write(sendData);
+            if(sendMessage.equals("QUIT"+ "\r\n")) {
+                out.write(sendData);
+                System.exit(0);
+                break;
+            }
+            if(sendMessage.length()<=255) {
+                out.write(sendData);
+            }
+                else
+                    System.out.println("Max 250 characters allowed");
+
         }
     }
    /* public static boolean userAccept(Socket clientSocket) throws IOException {

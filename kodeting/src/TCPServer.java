@@ -50,6 +50,11 @@ public class TCPServer {
                     System.out.println("test2");
                     continue;
                 }
+                if (user_temp.equals(duppUsers())) {
+                    serverMSG(sock, " J_ER: User already exists");
+                    System.out.println("test2");
+                    continue;
+                }
                 serverMSG(sock, "J_OK");
                 final String username = user_temp;
                 HashMap<String, Object> mitHash = new HashMap<>();
@@ -57,6 +62,8 @@ public class TCPServer {
                 mitHash.put("Socket", sock);
                 chatusers.add(mitHash);
                 System.out.println("USER->" + user_temp + "<-USER");
+                allUsers();
+
 
                 Thread recieveThread = new Thread(() -> {
                     try {
@@ -65,9 +72,10 @@ public class TCPServer {
                         e.printStackTrace();
                     }
                 });
-                recieveThread.start();
-                //sendThread.start();
-                 }
+
+                    recieveThread.start();
+                    //sendThread.start();
+                }
 
 
         }catch (IOException e) {
@@ -86,14 +94,20 @@ public class TCPServer {
     }
 
     public static void serverRCVMSG (Socket sock, String username) throws IOException {
-        InputStream inp = sock.getInputStream();
         while(true){
+        InputStream inp = sock.getInputStream();
             byte[] dataRecieve = new byte[1024];
             inp.read(dataRecieve);
             String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
-            System.out.println("data <<"+username +">>: <<" + msgRecieve.trim() + ">>");
-            serverSendAll("data <<"+username +">>: <<" + msgRecieve.trim() + ">>");
+            if (msgRecieve.trim().equals("QUIT")) {
+                removeUser(username);
+                allUsers();
+                break;
+            }
+                System.out.println("DATA [" + username + "]: " + msgRecieve.trim());
+                serverSendAll("DATA [" + username + "]: " + msgRecieve.trim());
+
         }
     }
 
@@ -104,13 +118,29 @@ public class TCPServer {
         }
     }
 
-    /*public static void serverSendUsers() throws IOException{
-        for (HashMap chatuser: chatusers)  {
-            String user_temp = (String) chatuser.get("username");
-            Socket sock_temp = (Socket) chatuser.get("Socket");
-            serverMSG(sock_temp, "User: " +user_temp+" Has Connected");
+
+    public static String duppUsers () {
+        for(HashMap<String, Object> chatuser: chatusers){
+            return chatuser.get("username").toString();
+            }return "";
         }
-    }*/
+
+        public static void allUsers() {
+            System.out.print("List: [");
+            for (HashMap<String, Object> chatuser : chatusers) {
+                System.out.print(chatuser.get("username").toString()+ " ");;
+            }
+            System.out.println("]");
+        }
+
+        public static void removeUser(String username) {
+            for (HashMap<String, Object> chatuser : chatusers) {
+                if ((chatuser.get("username")) == username) {
+                    chatusers.remove(chatuser);
+                    break;
+                }
+            }
+        }
 
 
 }
