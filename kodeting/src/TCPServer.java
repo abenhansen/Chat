@@ -39,7 +39,7 @@ public class TCPServer {
                     continue;
                 }
                 if (user_temp.equals(duppUsers())) {
-                    serverMSG(sock, " J_ER: User already exists");
+                    serverMSG(sock, "J_ER: User already exists");
                     continue;
                 }
                 serverMSG(sock, "J_OK");
@@ -52,18 +52,7 @@ public class TCPServer {
                 allUsers();
 
 
-                Thread recieveThread = new Thread(() -> {
-                    try {
-                        serverRCVMSG(sock, username);
-                    } catch (IOException e) {
-                        removeUser(username);
-                        allUsers();
-                        e.printStackTrace();
-
-                    }
-                });
-
-                    recieveThread.start();
+                rcvThread(sock,username);
                 }
 
 
@@ -136,6 +125,21 @@ public class TCPServer {
                     break;
                 }
             }
+        }
+
+        public static void rcvThread(Socket sock, String username){
+            Thread recieveThread = new Thread(() -> {
+                try {
+                    serverRCVMSG(sock, username);
+                } catch (IOException e) {
+                    removeUser(username);
+                    allUsers();
+                    e.printStackTrace();
+
+                }
+            });
+
+            recieveThread.start();
         }
 
 

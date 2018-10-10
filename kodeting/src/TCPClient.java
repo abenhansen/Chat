@@ -10,45 +10,29 @@ public class TCPClient {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
             System.out.println("Enter server IP to connect to");
-              final String ipConnect = in.nextLine();
-            final String ipConnect2 = "127.0.0.1";
-            System.out.println("Enter port port to connect to");
-             final int portConnect = in.nextInt();
+            final String ipConnect = in.nextLine();
+            //final String ipConnect2 = "127.0.0.1";
+            System.out.println("Enter port to connect to");
+            final int portConnect = in.nextInt();
             in.nextLine();
-            final int portConnect2 = 5656;
-
+            //final int portConnect2 = 5656;
+        while(true){
                 try {
                     InetAddress ip = InetAddress.getByName(ipConnect);
                     System.out.println("Connecting to the server");
                     Socket clientSocket = new Socket(ip, portConnect);
-
                     OutputStream out = clientSocket.getOutputStream();
-
                     System.out.println("What is your username?");
-                    String Username = in.nextLine();
-                    String userMsg = ("JOIN " + Username + "," + ip + ":" + portConnect + "\n");
+                    String username = in.nextLine();
+                    String userMsg = ("JOIN " + username + ", " + ipConnect + ":" + portConnect);
                     byte[] userJoin = userMsg.getBytes();
                     out.write(userJoin);
 
-                    Thread recieveThread = new Thread(() -> {
-                        try {
-                            clientMSG2(clientSocket);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    Thread sendThread = new Thread(() -> {
-                        try {
-                            clientSendMSG(clientSocket, Username);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-
                     if  (clientMSG(clientSocket).equals("J_OK")) {
-                            recieveThread.start();
-                            sendThread.start();
-                        sendAlive(clientSocket,Username);
+                        rcvThread(clientSocket);
+                        sndThread(clientSocket,username);
+                        sendAlive(clientSocket, username);
+                        break;
                    }
 
                 } catch (UnknownHostException e) {
@@ -56,7 +40,7 @@ public class TCPClient {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }}
 
             //Method used along with thread to check if server responds with J_OK
     public static String clientMSG (Socket clientSocket) throws IOException {
@@ -118,5 +102,28 @@ public class TCPClient {
         });
         alive.start();
     }
+
+    public static void rcvThread(Socket clientSocket){
+        Thread recieveThread = new Thread(() -> {
+            try {
+                clientMSG2(clientSocket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        recieveThread.start();
+    }
+
+    public static void sndThread(Socket clientSocket, String username) {
+        Thread sendThread = new Thread(() -> {
+            try {
+                clientSendMSG(clientSocket, username);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        sendThread.start();
+    }
+
 
 }
