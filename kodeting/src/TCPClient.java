@@ -10,22 +10,23 @@ public class TCPClient {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
             System.out.println("Enter server IP to connect to");
-            //  final String ipConnect = in.nextLine();
+              final String ipConnect = in.nextLine();
             final String ipConnect2 = "127.0.0.1";
             System.out.println("Enter port port to connect to");
-            //  final int portConnect = in.nextInt();
+             final int portConnect = in.nextInt();
+            in.nextLine();
             final int portConnect2 = 5656;
 
                 try {
-                    InetAddress ip = InetAddress.getByName(ipConnect2);
+                    InetAddress ip = InetAddress.getByName(ipConnect);
                     System.out.println("Connecting to the server");
-                    Socket clientSocket = new Socket(ip, portConnect2);
+                    Socket clientSocket = new Socket(ip, portConnect);
 
                     OutputStream out = clientSocket.getOutputStream();
 
                     System.out.println("What is your username?");
                     String Username = in.nextLine();
-                    String userMsg = ("JOIN " + Username + "," + ip + ":" + portConnect2 + "\n");
+                    String userMsg = ("JOIN " + Username + "," + ip + ":" + portConnect + "\n");
                     byte[] userJoin = userMsg.getBytes();
                     out.write(userJoin);
 
@@ -38,7 +39,7 @@ public class TCPClient {
                     });
                     Thread sendThread = new Thread(() -> {
                         try {
-                            clientSendMSG(clientSocket);
+                            clientSendMSG(clientSocket, Username);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -47,7 +48,7 @@ public class TCPClient {
                     if  (clientMSG(clientSocket).equals("J_OK")) {
                             recieveThread.start();
                             sendThread.start();
-                        sendAlive(clientSocket);
+                        sendAlive(clientSocket,Username);
                    }
 
                 } catch (UnknownHostException e) {
@@ -81,15 +82,17 @@ public class TCPClient {
     }
 
     // Method to send messages from client
-    public static void clientSendMSG (Socket sock) throws IOException{
+    public static void clientSendMSG (Socket sock, String username) throws IOException{
         while(true){
         OutputStream out = sock.getOutputStream();
            Scanner in = new Scanner(System.in);
             System.out.println("Message to server?");
-           String sendMessage = in.nextLine() + "\r\n";
+            String message = in.nextLine();
+           String sendMessage = "DATA [" + username + "]: " + message + "\r\n";
             byte[] sendData = sendMessage.getBytes();
-            if(sendMessage.equals("QUIT"+ "\r\n")) {
+            if(message.equals("QUIT")) {
                 out.write(sendData);
+                sock.close();
                 System.exit(0);
                 break;
             }
@@ -98,12 +101,12 @@ public class TCPClient {
     }
 
     //Method to send alive message
-    public static void sendAlive(Socket sock) {
+    public static void sendAlive(Socket sock, String Username) {
         Thread alive = new Thread(() -> {
             while(true){
             try {
                 OutputStream out = sock.getOutputStream();
-                String sendMessage = "IMAV";
+                String sendMessage = "DATA [" + Username + "]: IMAV";
                 byte[] sendData = sendMessage.getBytes();
                 Thread.sleep(60000);
                 out.write(sendData);

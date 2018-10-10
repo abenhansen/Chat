@@ -89,15 +89,15 @@ public class TCPServer {
             inp.read(dataRecieve);
             String msgRecieve = new String(dataRecieve);
             msgRecieve.trim();
-
-            if (msgRecieve.trim().equals("QUIT")) {
+            if (msgRecieve.trim().contains("QUIT")) {
                 removeUser(username);
                 allUsers();
+                sock.close();
                 break;
             }
             if(msgRecieve.trim().length()<=250) {
-                System.out.println("DATA [" + username + "]: " + msgRecieve.trim());
-                serverSendAll("DATA [" + username + "]: " + msgRecieve.trim());
+                System.out.println(msgRecieve.trim());
+                serverSendAll(msgRecieve.trim());
                 continue;
             }
             if (msgRecieve.trim().length()>250) {
@@ -119,12 +119,12 @@ public class TCPServer {
         for(HashMap<String, Object> chatuser: chatusers){
             return chatuser.get("username").toString();
             }return "";
-        }
+            }
 
-        public static void allUsers() {
-            System.out.print("List: [");
-            for (HashMap<String, Object> chatuser : chatusers) {
-                System.out.print(chatuser.get("username").toString()+ " ");;
+            public static void allUsers() {
+                System.out.print("List: [");
+                for (HashMap<String, Object> chatuser : chatusers) {
+                    System.out.print(chatuser.get("username").toString()+ " ");;
             }
             System.out.println("]");
         }
