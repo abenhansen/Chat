@@ -111,12 +111,17 @@ public class TCPServer {
             }
 
             public static void allUsers() {
-                System.out.print("List: [");
+                try {
+                    String msg ="List: [";
+
                 for (HashMap<String, Object> chatuser : chatusers) {
-                    System.out.print(chatuser.get("username").toString()+ " ");;
+                    msg +=((chatuser.get("username").toString()+ " "));
             }
-            System.out.println("]");
-        }
+                serverSendAll(msg + "]");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
         public static void removeUser(String username) {
             for (HashMap<String, Object> chatuser : chatusers) {

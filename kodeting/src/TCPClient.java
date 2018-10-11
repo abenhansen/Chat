@@ -72,7 +72,7 @@ public class TCPClient {
            Scanner in = new Scanner(System.in);
             System.out.println("Message to server?");
             String message = in.nextLine();
-           String sendMessage = "DATA [" + username + "]: " + message + "\r\n";
+           String sendMessage = "DATA " + username + ": " + message + "\r\n";
             byte[] sendData = sendMessage.getBytes();
             if(message.equals("QUIT")) {
                 out.write(sendData);
@@ -90,7 +90,7 @@ public class TCPClient {
             while(true){
             try {
                 OutputStream out = sock.getOutputStream();
-                String sendMessage = "DATA [" + Username + "]: IMAV";
+                String sendMessage = "IMAV";
                 byte[] sendData = sendMessage.getBytes();
                 Thread.sleep(60000);
                 out.write(sendData);
